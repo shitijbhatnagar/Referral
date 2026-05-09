@@ -14,3 +14,4 @@ Note:
 If the application is being deployed on GKE, then for the database setups, the following SQL scipts need to be run:
 - bootstrap-cloudsql-objects.sql
 - bootstrap-cloudsql-perms.sql (modify the right IAM user id in the script before running)
+- Further, if PSC is being used, then the V2 of the above scripts need to be run
