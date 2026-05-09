@@ -14,8 +14,5 @@ GRANT SELECT ON ALL TABLES IN SCHEMA public TO readonly_role;
 GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO readwrite_role;
 GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO readwrite_role;
 
--- 4. Create IAM mapped DB user for app GSA
-CREATE USER "ref-gsa@project-9627b595-2a5e-4fc1-9f1.iam" WITH LOGIN;
-
--- 5. Assign roles to users
+-- 4. Assign roles to users (ensure the IAM user below is already created in the SQL instance)
 GRANT readwrite_role TO "ref-gsa@project-9627b595-2a5e-4fc1-9f1.iam";
