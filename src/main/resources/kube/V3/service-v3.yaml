@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: referrals-app-svc-v3
+  namespace: referrals-ns-v3
+  labels:
+    app: referrals-app-v3
+spec:
+  selector:
+    app: referrals-app-v3
+  ports:
+  - name: http
+    port: 8081
+    targetPort: 8081
+  type: ClusterIP

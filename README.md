@@ -15,3 +15,4 @@ If the application is being deployed on GKE, then for the database setups, the f
 - bootstrap-cloudsql-objects.sql
 - bootstrap-cloudsql-perms.sql (modify the right IAM user id in the script before running)
 - Further, if PSC is being used, then the V2 of the above scripts need to be run
+- And if TFE is being used (referral foundation and resource projects), then the V3 of the above scripts need to be run

@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: referrals-app-v3
+  namespace: referrals-ns-v3
+  labels:
+    app: referrals-app-v3
+spec:
+  replicas: 2
+  revisionHistoryLimit: 3
+  strategy:
+   type: RollingUpdate
+   rollingUpdate:
+    maxSurge: 1
+    maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: referrals-app-v3
+  template:
+    metadata:
+      labels:
+        app: referrals-app-v3
+    spec:
+      serviceAccountName: ref-ksa-v3
+
+      containers:
+
+      # Container 1 — Referral application
+      - name: app
+        image: us-docker.pkg.dev/project-9627b595-2a5e-4fc1-9f1/referrals-repo/referrals-app:v1
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8081
+        readinessProbe:
+          httpGet:
+            path: /referrals/status
+            port: 8081
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          failureThreshold: 5
+        livenessProbe:
+          httpGet:
+            path: /referrals/status
+            port: 8081
+          initialDelaySeconds: 120
+          periodSeconds: 15
+          failureThreshold: 5
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: "kube"
+        - name: SPRING_DATASOURCE_URL
+          value: "jdbc:postgresql://localhost:5432/referrals_db?sslmode=disable"
+        - name: SPRING_DATASOURCE_USERNAME
+          value: "ref-gsa-v3@referrals-gcp-v3-dev.iam"
+        - name: SPRING_DATASOURCE_PASSWORD
+          value: "PASSWORD"          
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+
+      # Container 2 — Cloud SQL Auth Proxy
+      - name: cloud-sql-proxy
+        image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:latest
+        args:
+          - "--structured-logs"
+          - "--port=5432"
+          - "--auto-iam-authn"
+          - "--psc"
+          - "referrals-gcp-v3-dev:asia-south2:sandbox-psc-v3"
+        resources:
+          requests:
+            memory: "32Mi"
+            cpu: "25m"
+          limits:
+            memory: "64Mi"
+            cpu: "50m"
+        securityContext:
+          runAsNonRoot: true

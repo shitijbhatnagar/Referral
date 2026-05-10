@@ -1,0 +1,14 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: referrals-app-ingress-v3
+  namespace: referrals-ns-v3
+  annotations:
+    kubernetes.io/ingress.class: "gce"
+    ingress.gcp.kubernetes.io/healthcheck-path: "/referrals/status"
+spec:
+  defaultBackend:
+    service:
+      name: referrals-app-svc-v3
+      port:
+        number: 8081
